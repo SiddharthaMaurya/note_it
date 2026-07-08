@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="12dp"
+    >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:id="@+id/txtTitle"
+                android:textColor="@color/black"
+                android:layout_marginBottom= "4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Content"
+                android:id="@+id/txtContent"
+                android:textColor="@color/black"
+                android:layout_margin="4dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today • 5:30 PM"
+                android:textColor="#808080"
+                android:textSize="12sp"
+                android:layout_margin="4dp"/>
+
+
+        </LinearLayout>
+
+
+
+
+
+</androidx.cardview.widget.CardView>
