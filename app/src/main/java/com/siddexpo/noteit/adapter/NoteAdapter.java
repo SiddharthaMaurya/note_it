@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.siddexpo.noteit.R;
 import com.siddexpo.noteit.model.Note;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
 
@@ -50,7 +53,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
         holder.txtTitle.setText(note.getTitle());
         holder.txtContent.setText(note.getContent());
-        holder.tvDate.setText(String.valueOf(note.getUpdatedAt()));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy • hh:mm a", Locale.getDefault());
+        String formattedDate = sdf.format(new Date(note.getUpdatedAt()));
+
+        holder.tvDate.setText(formattedDate);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

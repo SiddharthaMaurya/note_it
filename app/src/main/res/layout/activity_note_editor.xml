@@ -17,7 +17,6 @@
         android:background="@color/white"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:titleTextColor="@color/black"
-        app:menu="@menu/note_menu"
         />
 
 

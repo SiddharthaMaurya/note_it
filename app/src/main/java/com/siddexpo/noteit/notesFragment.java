@@ -11,10 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.siddexpo.noteit.adapter.NoteAdapter;
+import com.siddexpo.noteit.database.AppDatabase;
 import com.siddexpo.noteit.model.Note;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class notesFragment extends Fragment {
@@ -23,6 +28,7 @@ public class notesFragment extends Fragment {
     private NoteAdapter adapter;
     private ArrayList<Note> noteList;
 
+    private FloatingActionButton btnNote;
 
     public notesFragment() {
         // Required empty public constructor
@@ -38,22 +44,76 @@ public class notesFragment extends Fragment {
         noteList = new ArrayList<>();
 
         recyclerViewNote = view.findViewById(R.id.recyclerViewNote);
+        btnNote = view.findViewById(R.id.btnNote);
 
-        noteList.add(new Note(1,"Android Development", "Today I learned RecyclerView Adapter.", System.currentTimeMillis()));
+        btnNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                openEditor(null);
+
+            }
+        });
+
 
         adapter = new NoteAdapter(requireContext(), noteList, new NoteAdapter.OnNoteClickListener() {
             @Override
             public void onNoteClick(Note note) {
-                Intent intent = new Intent(requireContext(),NoteEditorActivity.class);
-                startActivity(intent);
+
+                openEditor(note);
+
             }
         });
 
-        recyclerViewNote.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        recyclerViewNote.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerViewNote.setAdapter(adapter);
 
+        loadNotes();
+
         return view;
+    }
+
+    private void loadNotes(){
+
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() ->{
+
+            List<Note> notes = db.noteDao().getAllNotes();
+
+            noteList.clear();
+            noteList.addAll(notes);
+
+            requireActivity().runOnUiThread(() ->{
+                adapter.notifyDataSetChanged();
+            });
+        });
+
+
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        loadNotes();
+    }
+
+
+    private void openEditor(Note note) {
+        Intent intent = new Intent(requireContext(), NoteEditorActivity.class);
+
+        if (note != null) {
+            intent.putExtra("id", note.getId());
+            intent.putExtra("title", note.getTitle());
+            intent.putExtra("content", note.getContent());
+        }
+
+        startActivity(intent);
     }
 
 }

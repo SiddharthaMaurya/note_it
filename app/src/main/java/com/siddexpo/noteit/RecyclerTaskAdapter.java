@@ -1,7 +1,6 @@
 package com.siddexpo.noteit;
 
 import android.content.Context;
-import android.service.carrier.CarrierService;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +10,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapter.ViewHolder> {
 
 
     Context context;
 
-    ArrayList<Task_title> arrTask = new ArrayList<>();
+    ArrayList<Todo> arrTask = new ArrayList<>();
 //    RecyclerTaskAdapter(Context context){
 //        this.context = context;
 //    }
@@ -32,7 +35,7 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
 
     private OnEditClickListener listener;
 
-    public RecyclerTaskAdapter(Context context , ArrayList<Task_title> arrTask ,OnEditClickListener listener) {
+    public RecyclerTaskAdapter(Context context , ArrayList<Todo> arrTask , OnEditClickListener listener) {
         this.arrTask = arrTask;
         this.context = context;
         this.listener = listener;
@@ -51,11 +54,16 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Task_title task = arrTask.get(position);
+        Todo task = arrTask.get(position);
 
 
         holder.txtContent.setText(task.getTask());
         holder.checked.setChecked(task.isCompleted());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy • hh:mm a", Locale.getDefault());
+        String formatteDate = sdf.format(new Date(task.getUpdatedAt()));
+
+        holder.todoDate.setText(formatteDate);
 
         holder.cardTask.setRadius(16f);
         switch(task.getPriority()){
@@ -97,6 +105,8 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
 
         CheckBox checked;
 
+        TextView todoDate;
+
 
         public ViewHolder(View itemView){
             super(itemView);
@@ -105,6 +115,7 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
             cardTask = itemView.findViewById(R.id.cardTask);
             imgEdit = itemView.findViewById(R.id.imgEdit);
             checked = itemView.findViewById(R.id.checked);
+            todoDate = itemView.findViewById(R.id.todoDate);
         }
     }
 

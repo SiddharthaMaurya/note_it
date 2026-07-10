@@ -25,7 +25,8 @@
                 android:textStyle="bold"
                 android:id="@+id/txtTitle"
                 android:textColor="@color/black"
-                android:layout_marginBottom= "4dp"/>
+                android:layout_marginBottom= "4dp"
+                android:layout_marginStart="4dp"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -43,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Today • 5:30 PM"
-                android:textColor="#808080"
+                android:textColor="#B60707"
                 android:textSize="12sp"
                 android:layout_margin="4dp"/>
 

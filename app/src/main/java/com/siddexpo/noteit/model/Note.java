@@ -1,18 +1,33 @@
 package com.siddexpo.noteit.model;
 
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "notes")
     public class Note {
+        @PrimaryKey(autoGenerate = true)
         private int id;
         private String title;
         private String content;
         private long updatedAt;
 
-        public Note(int id, String title, String content, long updatedAt) {
-            this.id = id;
+        @Ignore
+        public Note( String title, String content, long updatedAt) {
             this.title = title;
             this.content = content;
             this.updatedAt = updatedAt;
         }
+
+    public Note(int id, String title, String content, long updatedAt) {
+            this.id = id;
+            this.title = title;
+            this.content = content;
+            this.updatedAt = updatedAt;
+    }
+
+
 
         public int getId() {
             return id;
@@ -28,6 +43,10 @@ package com.siddexpo.noteit.model;
 
         public long getUpdatedAt() {
             return updatedAt;
+        }
+
+        public void setId(int id){
+            this.id = id;
         }
 
         public void setTitle(String title) {

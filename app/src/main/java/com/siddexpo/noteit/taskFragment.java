@@ -1,7 +1,5 @@
 package com.siddexpo.noteit;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,29 +7,35 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.InvalidationTracker;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.siddexpo.noteit.database.AppDatabase;
+import com.siddexpo.noteit.database.NoteDao;
+import com.siddexpo.noteit.database.TodoDao;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class taskFragment extends Fragment {
 
     RecyclerView recyclerView;
-    ArrayList<Task_title> arrTask = new ArrayList<>();
+    ArrayList<Todo> arrTask = new ArrayList<>();
 
     RecyclerTaskAdapter adapter;
 
@@ -55,43 +59,49 @@ public class taskFragment extends Fragment {
              public void onClick(View view) {
                  BottomSheetFragment sheet = new BottomSheetFragment(new BottomSheetFragment.OnTaskAddedListner() {
                      @Override
-                     public void onTaskAdded(Task_title task_title) {
-                         arrTask.add(task_title);
-                         adapter.notifyItemInserted(arrTask.size()-1);
+                     public void onTaskAdded(Todo task_title) {
+//                         arrTask.add(task_title);
+//                         adapter.notifyItemInserted(arrTask.size()-1);
                      }
 
                      @Override
-                     public void onTaskUpdated(Task_title task, int position) {
+                     public void onTaskUpdated(Todo task, int position) {
 
                      }
                  });
+
+                 sheet.setOnSavedListner(() -> loadTodos());
 
                  sheet.show(getChildFragmentManager(),"AddTask");
              }
          });
 
 
-        adapter = new RecyclerTaskAdapter(requireContext(), arrTask , position -> {
-            Task_title task = arrTask.get(position);
+            adapter = new RecyclerTaskAdapter(requireContext(), arrTask , position -> {
+            Todo task = arrTask.get(position);
 
             BottomSheetFragment sheet = new BottomSheetFragment(task, position, new BottomSheetFragment.OnTaskAddedListner() {
                 @Override
-                public void onTaskAdded(Task_title task_title) {
+                public void onTaskAdded(Todo task_title) {
 
                 }
 
                 @Override
-                public void onTaskUpdated(Task_title task, int position) {
-                    arrTask.set(position, task);
-                    adapter.notifyItemChanged(position);
+                public void onTaskUpdated(Todo task, int position) {
+//                    arrTask.set(position, task);
+//                    adapter.notifyItemChanged(position);
                 }
             });
+
+            sheet.setOnSavedListner(() -> loadTodos());
 
             sheet.show(getChildFragmentManager(),"Edit");
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        loadTodos();
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
 
@@ -107,7 +117,16 @@ public class taskFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
                 int position = viewHolder.getAdapterPosition();
-                Task_title deletedTask = arrTask.get(position);
+                Todo deletedTask = arrTask.get(position);
+
+                AppDatabase db = AppDatabase.getInstance(requireContext());
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                executor.execute(()->{
+                    db.todoDao().delete(deletedTask);
+                });
+
                 arrTask.remove(position);
                 adapter.notifyItemRemoved(position);
 
@@ -115,6 +134,11 @@ public class taskFragment extends Fragment {
                 Snackbar.make(recyclerView,"Task Deleted",Snackbar.LENGTH_LONG)
                         .setAction("UNDO",v-> {
                             arrTask.add(position,deletedTask);
+
+                            executor.execute(() -> {
+                                db.todoDao().insert(deletedTask);
+                            });
+
                             adapter.notifyItemInserted(position);
                         })
                         .show();
@@ -172,4 +196,32 @@ public class taskFragment extends Fragment {
         return view;
 
     }
+
+    private void loadTodos(){
+        AppDatabase db = AppDatabase.getInstance(requireContext());
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        executor.execute(() ->{
+
+            List<Todo> todos = db.todoDao().getAllTodos();
+
+            arrTask.clear();
+            arrTask.addAll(todos);
+
+            requireActivity().runOnUiThread(() ->{
+                adapter.notifyDataSetChanged();
+            });
+
+        });
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        loadTodos();
+    }
+
+
 }

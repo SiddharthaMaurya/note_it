@@ -2,24 +2,24 @@ package com.siddexpo.noteit;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.siddexpo.noteit.database.AppDatabase;
 
-import kotlinx.coroutines.scheduling.Task;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
 
+    private Runnable onSaved;
 
     private EditText etTask;
 
@@ -27,7 +27,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
     private boolean isEdit;
     private int editPosition;
-    private Task_title editTask;
+    private Todo editTask;
 
     ChipGroup chipGroupPriority;
 
@@ -39,8 +39,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
     private OnTaskAddedListner listner;
     public interface OnTaskAddedListner{
-        void onTaskAdded(Task_title task_title);
-        void onTaskUpdated(Task_title task, int position);
+        void onTaskAdded(Todo todo);
+        void onTaskUpdated(Todo task, int position);
     }
 
     public BottomSheetFragment(OnTaskAddedListner listner) {
@@ -48,7 +48,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         this.listner = listner;
     }
 
-    public BottomSheetFragment(Task_title task, int position, OnTaskAddedListner listner){
+    public BottomSheetFragment(Todo task, int position, OnTaskAddedListner listner){
         this.listner = listner;
         this.editTask = task;
         this.editPosition = position;
@@ -125,17 +125,58 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                     return;
                 }
 
-                Task_title task_title = new Task_title( task , priority , false);
-                if(isEdit){
-                    listner.onTaskUpdated(task_title , editPosition);
-                } else {
-                    listner.onTaskAdded(task_title);
-                }
+                //Todo todo = new Todo( task , priority , false , System.currentTimeMillis());
 
-                dismiss();
+                AppDatabase db = AppDatabase.getInstance(requireContext());
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                executor.execute(() ->{
+
+
+                    if(isEdit){
+                        //listner.onTaskUpdated(todo, editPosition);
+                        Todo todo = new Todo(
+                                editTask.getId(),
+                                task,
+                                priority,
+                                editTask.isCompleted(),
+                                System.currentTimeMillis()
+                        );
+
+                        db.todoDao().update(todo);
+                    } else {
+                        //listner.onTaskAdded(todo);
+                        Todo todo = new Todo(
+                                task,
+                                priority,
+                                false,
+                                System.currentTimeMillis()
+                        );
+
+                        db.todoDao().insert(todo);
+                    }
+
+                    requireActivity().runOnUiThread(() ->{
+
+                        if(onSaved != null){
+                            onSaved.run();
+                        }
+
+                        dismiss();
+
+                });
+
+                });
+
             }
         });
 
         return view3;
     }
+
+    public void setOnSavedListner(Runnable onSaved){
+        this.onSaved = onSaved;
+    }
+
 }
