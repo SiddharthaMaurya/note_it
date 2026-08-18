@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:icon="@drawable/pin_svgicon"
+        android:icon="@drawable/pin_notr"
         android:id="@+id/action_pin"
         android:title="Pin"
         app:showAsAction="ifRoom"/>

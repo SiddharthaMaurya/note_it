@@ -1,5 +1,8 @@
 package com.siddexpo.noteit;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -10,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.siddexpo.noteit.adapter.NoteAdapter;
@@ -34,6 +38,8 @@ public class notesFragment extends Fragment {
         // Required empty public constructor
     }
 
+    private LinearLayout emptyLayout;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,6 +50,10 @@ public class notesFragment extends Fragment {
         noteList = new ArrayList<>();
 
         recyclerViewNote = view.findViewById(R.id.recyclerViewNote);
+        emptyLayout = view.findViewById(R.id.emptyLayout);
+
+
+
         btnNote = view.findViewById(R.id.btnNote);
 
         btnNote.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +81,7 @@ public class notesFragment extends Fragment {
 
         loadNotes();
 
+
         return view;
     }
 
@@ -89,6 +100,15 @@ public class notesFragment extends Fragment {
 
             requireActivity().runOnUiThread(() ->{
                 adapter.notifyDataSetChanged();
+
+                if(noteList.isEmpty()){
+                    emptyLayout.setVisibility(VISIBLE);
+                    recyclerViewNote.setVisibility(GONE);
+                }
+                else{
+                    emptyLayout.setVisibility(GONE);
+                    recyclerViewNote.setVisibility(VISIBLE);
+                }
             });
         });
 
@@ -101,6 +121,14 @@ public class notesFragment extends Fragment {
         super.onResume();
 
         loadNotes();
+        if(noteList.isEmpty()){
+            emptyLayout.setVisibility(VISIBLE);
+            recyclerViewNote.setVisibility(GONE);
+        }
+        else{
+            emptyLayout.setVisibility(GONE);
+            recyclerViewNote.setVisibility(VISIBLE);
+        }
     }
 
 
@@ -111,6 +139,7 @@ public class notesFragment extends Fragment {
             intent.putExtra("id", note.getId());
             intent.putExtra("title", note.getTitle());
             intent.putExtra("content", note.getContent());
+            intent.putExtra("pinned",note.getPinned());
         }
 
         startActivity(intent);

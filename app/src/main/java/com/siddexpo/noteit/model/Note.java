@@ -13,19 +13,25 @@ import androidx.room.PrimaryKey;
         private String content;
         private long updatedAt;
 
-        @Ignore
-        public Note( String title, String content, long updatedAt) {
+        private boolean pinned;
+
+
+        public Note( String title, String content, long updatedAt ,boolean pinned) {
             this.title = title;
             this.content = content;
             this.updatedAt = updatedAt;
+            this.pinned = pinned;
         }
 
-    public Note(int id, String title, String content, long updatedAt) {
+
+        @Ignore
+        public Note(int id, String title, String content, long updatedAt,boolean pinned) {
             this.id = id;
             this.title = title;
             this.content = content;
             this.updatedAt = updatedAt;
-    }
+            this.pinned = pinned;
+        }
 
 
 
@@ -45,6 +51,9 @@ import androidx.room.PrimaryKey;
             return updatedAt;
         }
 
+
+        public boolean getPinned(){return pinned; }
+
         public void setId(int id){
             this.id = id;
         }
@@ -59,6 +68,10 @@ import androidx.room.PrimaryKey;
 
         public void setUpdatedAt(long updatedAt) {
             this.updatedAt = updatedAt;
+        }
+
+        public void setPinned(boolean pinned){
+            this.pinned = pinned;
         }
     }
 

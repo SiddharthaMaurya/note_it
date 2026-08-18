@@ -2,4 +2,6 @@
     <string name="app_name">Note It</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_task_yet">No task yet</string>
+    <string name="tap_the_button_to_create_your_first_task">Tap the + button to create your first task.</string>
 </resources>

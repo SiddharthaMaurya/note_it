@@ -2,6 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.NoteIt" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorError">@color/error</item>
     </style>
 </resources>

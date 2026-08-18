@@ -1,4 +1,4 @@
-package com.siddexpo.noteit;
+package com.siddexpo.noteit.model;
 
 import androidx.room.Entity;
 import androidx.room.Ignore;

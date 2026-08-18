@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.siddexpo.noteit.Todo;
+import com.siddexpo.noteit.model.Todo;
 
 import java.util.List;
 

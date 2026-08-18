@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Today • 5:30 PM"
-                android:textColor="#B60707"
+                android:textColor="@color/body_text"
                 android:textSize="12sp"
                 android:layout_margin="4dp"/>
 

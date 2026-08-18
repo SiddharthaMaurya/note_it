@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.siddexpo.noteit.database.AppDatabase;
+import com.siddexpo.noteit.model.Todo;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

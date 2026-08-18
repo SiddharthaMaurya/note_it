@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.Database;
 
 
-import com.siddexpo.noteit.Todo;
+import com.siddexpo.noteit.model.Todo;
 import com.siddexpo.noteit.model.Note;
 
 @Database(
@@ -16,7 +16,7 @@ import com.siddexpo.noteit.model.Note;
                 Note.class,
                 Todo.class
         },
-        version = 2,
+        version = 3,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {

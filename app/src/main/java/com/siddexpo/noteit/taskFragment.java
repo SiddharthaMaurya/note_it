@@ -1,5 +1,8 @@
 package com.siddexpo.noteit;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -7,25 +10,23 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.InvalidationTracker;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.siddexpo.noteit.adapter.TodoAdapter;
 import com.siddexpo.noteit.database.AppDatabase;
-import com.siddexpo.noteit.database.NoteDao;
-import com.siddexpo.noteit.database.TodoDao;
+import com.siddexpo.noteit.model.Todo;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +38,9 @@ public class taskFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<Todo> arrTask = new ArrayList<>();
 
-    RecyclerTaskAdapter adapter;
+    TodoAdapter adapter;
+
+    private LinearLayout emptyLayout;
 
     FloatingActionButton btnAdd;
     public taskFragment() {
@@ -52,6 +55,8 @@ public class taskFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
 
+        emptyLayout = view.findViewById(R.id.emptyLayout);
+
         btnAdd = view.findViewById(R.id.btnAdd);
 
          btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -59,8 +64,8 @@ public class taskFragment extends Fragment {
              public void onClick(View view) {
                  BottomSheetFragment sheet = new BottomSheetFragment(new BottomSheetFragment.OnTaskAddedListner() {
                      @Override
-                     public void onTaskAdded(Todo task_title) {
-//                         arrTask.add(task_title);
+                     public void onTaskAdded(Todo todo) {
+//                         arrTask.add(todo);
 //                         adapter.notifyItemInserted(arrTask.size()-1);
                      }
 
@@ -77,7 +82,7 @@ public class taskFragment extends Fragment {
          });
 
 
-            adapter = new RecyclerTaskAdapter(requireContext(), arrTask , position -> {
+            adapter = new TodoAdapter(requireContext(), arrTask , position -> {
             Todo task = arrTask.get(position);
 
             BottomSheetFragment sheet = new BottomSheetFragment(task, position, new BottomSheetFragment.OnTaskAddedListner() {
@@ -211,6 +216,15 @@ public class taskFragment extends Fragment {
 
             requireActivity().runOnUiThread(() ->{
                 adapter.notifyDataSetChanged();
+
+                if(arrTask.isEmpty()){
+                    emptyLayout.setVisibility(VISIBLE);
+                    recyclerView.setVisibility(GONE);
+                }
+                else{
+                    emptyLayout.setVisibility(GONE);
+                    recyclerView.setVisibility(VISIBLE);
+                }
             });
 
         });
@@ -221,6 +235,15 @@ public class taskFragment extends Fragment {
     public void onResume(){
         super.onResume();
         loadTodos();
+
+        if(arrTask.isEmpty()){
+            emptyLayout.setVisibility(VISIBLE);
+            recyclerView.setVisibility(GONE);
+        }
+        else{
+            emptyLayout.setVisibility(GONE);
+            recyclerView.setVisibility(VISIBLE);
+        }
     }
 
 

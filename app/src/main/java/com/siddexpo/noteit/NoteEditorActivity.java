@@ -32,12 +32,14 @@ public class NoteEditorActivity extends AppCompatActivity {
 
     private int noteId = -1;
 
+    private boolean isPinned = false;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        //EdgeToEdge.enable(this);
         setContentView(R.layout.activity_note_editor);
 
         MaterialToolbar toolbar = findViewById(R.id.tabNote);
@@ -58,6 +60,9 @@ public class NoteEditorActivity extends AppCompatActivity {
         edtContent = findViewById(R.id.edtContent);
         edtTitle.requestFocus();
 
+        edtContent.setHorizontallyScrolling(false);
+        edtContent.setVerticalFadingEdgeEnabled(false);
+
         Intent intent = getIntent();
 
         if(intent.hasExtra("id")){
@@ -71,6 +76,9 @@ public class NoteEditorActivity extends AppCompatActivity {
 
             edtTitle.setText(title);
             edtContent.setText(content);
+
+            isPinned = intent.getBooleanExtra("pinned",false);
+
 
         } else {
             toolbar.setTitle("New Note");
@@ -104,12 +112,12 @@ public class NoteEditorActivity extends AppCompatActivity {
 
             try{
                 if(noteId == -1){
-                    Note note = new Note(title,content,System.currentTimeMillis());
+                    Note note = new Note(title,content,System.currentTimeMillis() ,isPinned);
 
                     db.noteDao().insert(note);
                 } else {
                     //existing note
-                    Note note = new Note(noteId, title, content,System.currentTimeMillis());
+                    Note note = new Note(noteId, title, content,System.currentTimeMillis(),isPinned);
 
                     db.noteDao().update(note);
                 }
@@ -136,7 +144,8 @@ public class NoteEditorActivity extends AppCompatActivity {
                     noteId,
                     edtTitle.getText().toString(),
                     edtContent.getText().toString(),
-                    System.currentTimeMillis()
+                    System.currentTimeMillis(),
+                    false
             );
 
             db.noteDao().delete(note);
@@ -154,6 +163,10 @@ public class NoteEditorActivity extends AppCompatActivity {
             menu.findItem(R.id.action_delete).setVisible(false);
         }
 
+        MenuItem pinItem = menu.findItem(R.id.action_pin);
+
+        pinItem.setIcon(isPinned ? R.drawable.pin_svgicon : R.drawable.pin_notr);
+
         return true;
     }
 
@@ -162,10 +175,26 @@ public class NoteEditorActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_pin){
+
+            isPinned = !isPinned;
+
+            item.setIcon(
+                    isPinned ? R.drawable.pin_svgicon : R.drawable.pin_notr
+            );
+
             return true;
         }
 
         if(id == R.id.action_share){
+            String title  = edtTitle.getText().toString();
+            String content = edtContent.getText().toString();
+
+            Intent iShare = new Intent(Intent.ACTION_SEND);
+            iShare.setType("text/plain");
+            iShare.putExtra(Intent.EXTRA_SUBJECT,title);
+            iShare.putExtra(Intent.EXTRA_TEXT,title + "\n\n" + content);
+
+            startActivity(Intent.createChooser(iShare, "Share note via"));
             return true;
         }
 
@@ -182,6 +211,7 @@ public class NoteEditorActivity extends AppCompatActivity {
                     }).show();
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

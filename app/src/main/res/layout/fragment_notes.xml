@@ -28,4 +28,34 @@
         android:paddingBottom="90dp"
         android:clipToPadding="false"/>
 
+    <LinearLayout
+        android:id="@+id/emptyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/notea_emptlayout"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No notes yet"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tap the + button to create your first note."
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+    </LinearLayout>
+
 </RelativeLayout>

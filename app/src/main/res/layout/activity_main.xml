@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text=" Note It "
             android:fontFamily="@font/notes_title"
-            android:textColor="@color/black"
+            android:textColor="@color/title_text"
             android:textStyle="bold"
             android:textSize="26sp"
             android:layout_margin="8dp"
@@ -49,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tab"
+            android:background="@color/surface"
             />
 
     </androidx.cardview.widget.CardView>

@@ -1,10 +1,12 @@
-package com.siddexpo.noteit;
+package com.siddexpo.noteit.adapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,14 +14,18 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
+import com.siddexpo.noteit.R;
+import com.siddexpo.noteit.database.AppDatabase;
+import com.siddexpo.noteit.model.Todo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapter.ViewHolder> {
+public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
 
     Context context;
@@ -35,7 +41,7 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
 
     private OnEditClickListener listener;
 
-    public RecyclerTaskAdapter(Context context , ArrayList<Todo> arrTask , OnEditClickListener listener) {
+    public TodoAdapter(Context context , ArrayList<Todo> arrTask , OnEditClickListener listener) {
         this.arrTask = arrTask;
         this.context = context;
         this.listener = listener;
@@ -59,6 +65,32 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
 
         holder.txtContent.setText(task.getTask());
         holder.checked.setChecked(task.isCompleted());
+
+        holder.checked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(@NonNull CompoundButton compoundButton, boolean b) {
+
+                task.setCompleted(compoundButton.isChecked());
+
+               if(task.isCompleted()){
+                   holder.txtContent.setPaintFlags(holder.txtContent.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+               }
+               else{
+                   holder.txtContent.setPaintFlags(holder.txtContent.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+               }
+
+
+
+
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+
+                executor.execute(()->{
+                    AppDatabase db = AppDatabase.getInstance(context);
+                    db.todoDao().update(task);
+                });
+
+            }
+        });
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy • hh:mm a", Locale.getDefault());
         String formatteDate = sdf.format(new Date(task.getUpdatedAt()));
@@ -94,6 +126,8 @@ public class RecyclerTaskAdapter extends RecyclerView.Adapter<RecyclerTaskAdapte
     public int getItemCount() {
         return arrTask.size();
     }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
